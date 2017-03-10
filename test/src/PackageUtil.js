@@ -7,18 +7,18 @@ const packageObj = require(path.resolve(__dirname, '../../package.json'));
 
 describe('PackageUtil:', () =>
 {
-   it('getPackageData:', () =>
+   it('format:', () =>
    {
-      const data = PackageUtil.getPackageData(packageObj);
+      const data = PackageUtil.format(packageObj);
 
       delete data.version;
 
       assert.strictEqual(JSON.stringify(data), verifyData);
    });
 
-   it('getPackageDataFromError:', () =>
+   it('formatFromError:', () =>
    {
-      const data = PackageUtil.getPackageDataFromError([`at (${path.resolve('./node_modules/babel-runtime/core-js.js')})`]);
+      const data = PackageUtil.formatFromError([`at (${path.resolve('./node_modules/babel-runtime/core-js.js')})`]);
 
       assert.strictEqual(data.name, 'babel-runtime');
    });

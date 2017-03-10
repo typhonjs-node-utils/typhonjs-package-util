@@ -6,13 +6,13 @@ import fs from 'fs';
 export default class PackageUtil
 {
    /**
-    * Get essential info for the given package object.
+    * Get essential info for the given package object consistently formatted.
     *
     * @param {NPMPackageObject} packageObj - A loaded `package.json` object.
     *
     * @returns {NPMPackageData}
     */
-   static getPackageData(packageObj = {})
+   static format(packageObj = {})
    {
       let bugsURL, repoURL;
 
@@ -72,14 +72,14 @@ export default class PackageUtil
 
    /**
     * Attempts to load any associated `package.json` file from any NPM module detected in the first line of the
-    * error trace. The logger is queried with the error generating a filtered stack trace.
+    * error trace.
     *
     * @param {Array<string>|Error} errOrTrace - A stack trace as an array of strings or error with stack trace to
     *                                           examine.
     *
     * @returns {NPMPackageData|undefined}
     */
-   static getPackageDataFromError(errOrTrace)
+   static formatFromError(errOrTrace)
    {
       // Covert any Error with a stack to an array of strings.
       if (errOrTrace instanceof Error && typeof errOrTrace.stack === 'string')
@@ -106,12 +106,11 @@ export default class PackageUtil
                {
                   const packageObj = JSON.parse(fs.readFileSync(`${modulePath}package.json`, { encode: 'utf8' }));
 
-                  packageInfo = PackageUtil.getPackageData(packageObj);
+                  packageInfo = PackageUtil.format(packageObj);
 
                   break;
                }
-               catch (packageErr)
-               { /* nop */ }
+               catch (packageErr) { /* nop */ }
             }
          }
       }
@@ -129,8 +128,8 @@ export function onPluginLoad(ev)
 {
    const eventbus = ev.eventbus;
 
-   eventbus.on('typhonjs:util:package:get:data', PackageUtil.getPackageData, PackageUtil);
-   eventbus.on('typhonjs:util:package:get:data:from:error', PackageUtil.getPackageDataFromError, PackageUtil);
+   eventbus.on('typhonjs:util:package:object:format', PackageUtil.format, PackageUtil);
+   eventbus.on('typhonjs:util:package:object:format:from:error', PackageUtil.formatFromError, PackageUtil);
 }
 
 // Module private ---------------------------------------------------------------------------------------------------
