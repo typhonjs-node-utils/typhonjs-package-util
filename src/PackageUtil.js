@@ -14,7 +14,7 @@ export default class PackageUtil
     */
    static format(packageObj = {})
    {
-      let bugsURL, repoURL;
+      let bugsURL, repoURL, scmType;
 
       // Sanity case to create empty object.
       if (packageObj === null || typeof packageObj === 'undefined')
@@ -26,6 +26,7 @@ export default class PackageUtil
       if (packageObj.repository)
       {
          repoURL = s_PARSE_URL(packageObj.repository.url ? packageObj.repository.url : packageObj.repository);
+         scmType = s_PARSE_URL_SCM_TYPE(repoURL);
       }
 
       // Parse bugs URL.
@@ -47,7 +48,7 @@ export default class PackageUtil
          homepage: packageObj.homepage,
          license: packageObj.license,
          main: packageObj.main,
-         repository: { url: repoURL },
+         repository: { type: scmType, url: repoURL },
          bugs: { url: bugsURL }
       };
 
@@ -184,4 +185,24 @@ const s_PARSE_URL = (parseURL) =>
    }
 
    return url;
+};
+
+/**
+ * Parses an URL to determine SCM type; Github supported.
+ *
+ * @param {string}   scmURL - URL to parse.
+ *
+ * @returns {string|undefined}
+ * @ignore
+ */
+const s_PARSE_URL_SCM_TYPE = (scmURL) =>
+{
+   let scmType;
+
+   if (scmURL.match(new RegExp('^https?://github.com/')))
+   {
+      scmType = 'github';
+   }
+
+   return scmType;
 };
